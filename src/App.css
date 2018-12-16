@@ -1,0 +1,50 @@
+.App {
+  text-align: center;
+}
+
+.trainInfo {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 2px;
+  list-style: none;
+}
+
+.trainList {
+  list-style: none;
+  display: inline-flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-left: 5px * 2;
+  list-style: none;
+}
+
+.YL {
+  background-color: yellow;
+}
+
+.SV {
+  background-color: silver;
+}
+
+.BL {
+  background-color: lightblue;
+}
+
+.RD {
+  background-color: red;
+}
+
+.GR {
+  background-color: green;
+}
+
+.OR {
+  background-color: orange;
+}
+
+.trainDiv {
+  width: 100vw;
+}
