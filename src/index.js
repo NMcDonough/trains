@@ -5,7 +5,6 @@ import Board from './Board';
 import Controller from './Controller'
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<Controller />, document.getElementById('controller'));
 ReactDOM.render(<Board />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
