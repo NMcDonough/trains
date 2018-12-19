@@ -20,33 +20,28 @@ class Board extends Component {
   }
   //Pings the API and paints the train information onscreen
   getTrains() {
-    var interval = 1000;//Interval for the setInterval() method
+    var interval = 5000;//Interval for the setInterval() method
     //Get API info
     setInterval(() => {
       fetch("https://api.wmata.com/TrainPositions/TrainPositions?contentType=json&api_key=fbf1849afc1f413687e96bab810f9843")
       .then(results => {
         return results.json();//Convert to JSON
       }).then(data => {
-          data = this.filterTrains(data['TrainPositions']);//Filter the data according to the filter in the state
-          let trains = data.map((train) => {//Map out the filtered array of train data
-            let classString = "trainInfo " + train.LineCode;//classString is used to assign CSS properties based on train info
-            return (
-              //List contains specific train information
-              <ol key={train.TrainId} class={classString}>
-                <li>ID: {train.TrainId}</li>
-                <li>Train Number: {train.TrainNumber}</li>
-                <li>Cars: {train.CarCount}</li>
-                <li>Service Type: {train.ServiceType}</li>
-                <li>Line Code: {train.LineCode}</li>
-                <li>Destination: {train.DestinationStationCode}</li>
-                <li>Stopped for {train.SecondsAtLocation}s</li>
-              </ol>
-            )
-          })
-          this.setState({trains: trains});//Sends generated content to the state
+          this.setState({trains: data['TrainPositions']});//Sends generated content to the state
       })
     }, interval)
   }
+
+  convertTrains() {
+    let nodeTrains = this.filterTrains(this.state.trains);
+    let filteredTrains = [];
+    for(let train of nodeTrains) {
+      filteredTrains.push(this.trainBox(train));
+    }
+    
+    return filteredTrains;
+  }
+
   //Filters incoming array of train data according to filter set in the state
   filterTrains(trains) {
     var keys = Object.keys(this.state.filter);//Gets keys from 'filter' key in state
@@ -63,6 +58,22 @@ class Board extends Component {
       return true;
     })
     return filtered;//Sends filtered array back to getTrains()
+  }
+
+  trainBox(train) {
+    let classString = "trainInfo " + train.LineCode;//classString is used to assign CSS properties based on train info
+
+    return (
+      <ol key={train.TrainId} class={classString}>
+        <li>ID: {train.TrainId}</li>
+        <li>Train Number: {train.TrainNumber}</li>
+        <li>Cars: {train.CarCount}</li>
+        <li>Service Type: {train.ServiceType}</li>
+        <li>Line Code: {train.LineCode}</li>
+        <li>Destination: {train.DestinationStationCode}</li>
+        <li>Stopped for {train.SecondsAtLocation}s</li>
+      </ol>
+    )
   }
 
   render() {//Render
@@ -110,23 +121,31 @@ class Board extends Component {
       </div>
       <div class="trainDiv">
         <ul class="trainList">
-          {this.state.trains}
+          {this.convertTrains()}
         </ul>
       </div>
       </>
     )
   }
+  
   //This method updates the filter to be applied the next time the API returns data
-  updateFilter = () => {
-    var carCount = document.getElementById("CarCount");
-    let carCountValue = carCount.options[carCount.selectedIndex].value;//These lines convert the string value from "CarCount" to an int for use in the filter
+  updateFilter = (e) => {
+    let newFilter = this.state.filter;
 
-    let newFilter = {
-      "LineCode": document.getElementById('LineCode').value,
-      "ServiceType": document.getElementById("ServiceType").value,
-      "CarCount": carCountValue
+    switch(e.target.id){
+      case "ServiceType": {
+        newFilter["ServiceType"] = e.target.value;
+        break;
+      }
+      case "LineCode": {
+        newFilter["LineCode"] = e.target.value;
+        break;
+      }
+      case "CarCount": {
+        newFilter["CarCount"] = e.target.value;
+        break;
+      }
     }
-
     this.setState({filter: newFilter})
   }
 }
